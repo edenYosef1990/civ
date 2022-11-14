@@ -2,13 +2,13 @@ import * as ex from "excalibur";
 import { WorldEntityComponent } from "../components/world-entity.component";
 import { singletonContainer } from "../singleton-container";
 import { GlobalState, ControlState } from "../stateManagment/global-state";
-import { stateAggragator } from "../stateManagment/state-aggragator";
+import { StateAggragator } from "../stateManagment/state-aggragator";
 import { Selector } from "../stateManagment/state-managment";
 
 export class WorldEntitiesSystem extends ex.System<WorldEntityComponent> {
   public readonly types = ["worldEntity"] as const;
   public systemType: ex.SystemType = ex.SystemType.Update;
-  private globalStateAggr: stateAggragator<GlobalState, object>;
+  private globalStateAggr: StateAggragator<GlobalState, object>;
   private selector: Selector<GlobalState, ControlState>;
 
   constructor() {

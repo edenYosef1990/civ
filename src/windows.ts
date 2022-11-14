@@ -69,4 +69,5 @@ export class GameWindow extends ex.ScreenElement {
     });
     return label;
   }
+
 }

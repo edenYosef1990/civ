@@ -1,7 +1,7 @@
 import { Effects } from "./effects";
 import { StateManagmentStore, ISelector } from "./state-managment";
 
-export class stateAggragator<T extends object, K> {
+export class StateAggragator<T extends object, K> {
   constructor(
     private store: StateManagmentStore<T>,
     private effects: Effects<K>

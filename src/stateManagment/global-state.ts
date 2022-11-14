@@ -1,5 +1,5 @@
 import { Effects } from "./effects";
-import { stateAggragator } from "./state-aggragator";
+import { StateAggragator } from "./state-aggragator";
 import { StateManagmentStore, on } from "./state-managment";
 
 export type ControlState = "world" | "window";
@@ -9,7 +9,7 @@ export type GlobalState = {
   selectedTile: number | null;
 };
 
-export function createGlobalStateAggr(): stateAggragator<GlobalState, object> {
+export function createGlobalStateAggr(): StateAggragator<GlobalState, object> {
   const worldStateReducer: StateManagmentStore<GlobalState> =
     new StateManagmentStore<GlobalState>({
       controlState: "world",
@@ -20,5 +20,5 @@ export function createGlobalStateAggr(): stateAggragator<GlobalState, object> {
     selectedTile: data.selectedTile,
   }));
   const effects: Effects<object> = new Effects(worldStateReducer, {});
-  return new stateAggragator<GlobalState, object>(worldStateReducer, effects);
+  return new StateAggragator<GlobalState, object>(worldStateReducer, effects);
 }
