@@ -23,7 +23,7 @@ export class Selector<T, K> implements ISelector<T> {
   private _savedValue: { changedValue: K } | null = null;
   public get savedValue(): { changedValue: K } | null {
     if (this._savedValue == null || this.isLoopIterCompleted) return null;
-    const savedValue = this.savedValue;
+    const savedValue = this._savedValue;
     this.isLoopIterCompleted = false;
     this._savedValue = null;
     return savedValue;
@@ -43,8 +43,6 @@ export class Selector<T, K> implements ISelector<T> {
   }
 }
 
-
-
 export interface IStateManagmentStore {
   execute(actionName: string, params: any): void;
 }
@@ -63,6 +61,7 @@ export class StateManagmentStore<T extends object>
   }
 
   execute(actionName: string, params: any) {
+    console.log("hello123");
     for (let eventHandler of this.eventHandlers) {
       let res = eventHandler(actionName, params, this.currentState);
       if (res === null) continue;
@@ -77,9 +76,9 @@ export class StateManagmentStore<T extends object>
     }
   }
 
-  getSelector(selector: ISelector<T>) : ISelector<T>{
+  getSelector(selector: ISelector<T>): ISelector<T> {
     this.selectors.push(selector);
-    return selector
+    return selector;
   }
 
   setLoopIterationComplete() {

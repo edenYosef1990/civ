@@ -2,12 +2,14 @@ import { ImageSource } from "excalibur";
 import sword from "./images/sword.png"; // for parcelv2 this is configured in the .parcelrc
 import sheet from "./images/sheet.png";
 import grass from "./images/RectangleGrass.png";
+import units_blue from "./images/units_blue.png";
 import * as ex from "excalibur";
 
 let Resources = {
   Sword: new ImageSource(sword),
   grass: new ImageSource(grass),
   sheet: new ImageSource(sheet),
+  soldiersSheet: new ImageSource(units_blue),
 };
 
 const spriteSheet = ex.SpriteSheet.fromImageSource({
@@ -17,6 +19,22 @@ const spriteSheet = ex.SpriteSheet.fromImageSource({
     columns: 5,
     spriteHeight: 200,
     spriteWidth: 200,
+  },
+  spacing: {
+    margin: {
+      x: 0,
+      y: 0,
+    },
+  },
+});
+
+const soldiersSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.soldiersSheet,
+  grid: {
+    rows: 6,
+    columns: 6,
+    spriteHeight: 32,
+    spriteWidth: 32,
   },
   spacing: {
     margin: {
@@ -62,4 +80,4 @@ export function mapTypeToIndexes(tileType: TileType): {
   }
 }
 
-export { Resources, spriteSheet };
+export { Resources, spriteSheet , soldiersSpriteSheet };

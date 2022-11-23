@@ -8,8 +8,10 @@ export class StateAggragator<T extends object, K> {
   ) {}
 
   execute(actionName: string, params: any): void {
-    this.store.execute(actionName, params);
-    this.effects.execute(actionName, params);
+    let actions = this.effects.execute(actionName, params);
+    for (let action of actions) {
+      this.store.execute(action.actionName, action.params);
+    }
   }
 
   getSelector(selector: ISelector<T>): ISelector<T> {
