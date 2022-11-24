@@ -21,33 +21,41 @@ export function onEffect<T>(
 export class Effects<T> {
   effectHandlers: EffectHandler<T>[];
   constructor(
-    private store: IStateManagmentStore,
     private context: T,
     ...effectHandlers: EffectHandler<T>[]
   ) {
     this.effectHandlers = effectHandlers;
   }
 
+  getOutputPerAction(actionName: string, params: any) {
+    let output: { actionName: string; params: any }[] = [];
+    for (let effectHandler of this.effectHandlers) {
+      let res = effectHandler(actionName, params, this.context);
+      if (res === null) continue;
+      else {
+        output = [...output, ...res];
+      }
+    }
+    return output;
+  }
+
   execute(
     actionName: string,
     params: any
   ): { actionName: string; params: any }[] {
-    let output: { actionName: string; params: any }[] = [
-      { actionName: actionName, params: params },
-    ];
-    while (output.length > 0) {
+    let output: { actionName: string; params: any }[] = [];
+    let currLayer: { actionName: string; params: any }[] = [{ actionName: actionName, params: params }];
+
+    while (currLayer.length > 0) {
       let newOutput: { actionName: string; params: any }[] = [];
-      for (let action of output) {
-        for (let effectHandler of this.effectHandlers) {
-          let res = effectHandler( action.actionName, action.params, this.context);
-          if (res === null) continue;
-          else {
-            newOutput = [...newOutput, ...res];
-          }
-        }
+      for (let action of currLayer) {
+        let outputPerAction = this.getOutputPerAction(action.actionName, action.params);
+        newOutput = [...output, ...outputPerAction]
       }
-      output = newOutput;
+      currLayer = newOutput;
+      output = [...output, ...newOutput];
     }
+
     return output;
   }
 }
