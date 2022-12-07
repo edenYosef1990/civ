@@ -4,7 +4,7 @@ import { StateManagmentStore, on } from "./state-managment";
 import * as Actions from "./actions";
 import { EffectsDependencies } from "../singleton-container";
 
-export type ControlState = "world" | "window" ;
+export type ControlState = "world" | "window";
 
 export type GlobalState = {
   controlState: ControlState;
@@ -12,37 +12,48 @@ export type GlobalState = {
   selectedTileY: number | null;
 };
 
-export function createGlobalStateAggr<T>(
+export function createGlobalEffects(
   effectsDependencies: EffectsDependencies
-): StateAggragator<GlobalState, EffectsDependencies> {
-  const worldStateReducer: StateManagmentStore<GlobalState> =
-    new StateManagmentStore<GlobalState>({
-      controlState: "world",
-      selectedTileX: null,
-      selectedTileY: null,
-    },
-  on(Actions.selectTileAction, (data: { x: number; y: number }, state) => ({
-    ...state,
-    controlState: "window",
-    selectedTileX: data.x,
-    selectedTileY: data.y,
-  })));
-  const effects: Effects<EffectsDependencies> = new Effects(
-    worldStateReducer,
+): Effects<EffectsDependencies> {
+  return new Effects(
     effectsDependencies,
-    onEffect(Actions.initWorld,(params,context) => {
-	    context.worldService.initWorld();
-	    return null;
-    })
-    //onEffect(
-    //  Actions.selectTileAction,
-    //  (params: { x: number; y: number }, context) => {
-    //    return { actionName: Actions.selectTileAction, params: params };
-    //  }
-    //)
+    onEffect(Actions.initWorld, (_, context) => {
+      context.worldService.initWorld();
+      return [];
+    }),
+    onEffect(
+      Actions.commandSoldierMove,
+      (data: { unitId: number; col: number; row: number }, context) => {
+        context.worldService.moveUnitToTile(data.unitId, data.row, data.col);
+        return [];
+      }
+    ),
+    onEffect(
+      Actions.clickOnTile,
+      (data: { unitId: number; col: number; row: number }, context) => {
+        context.worldService.moveUnitToTile(data.unitId, data.row, data.col);
+        return [];
+      }
+    )
   );
-  return new StateAggragator<GlobalState, EffectsDependencies>(
-    worldStateReducer,
-    effects
+}
+
+export function createGlobalStateAggr<T>(): StateAggragator< GlobalState > {
+  const worldStateReducer: StateManagmentStore<GlobalState> =
+    new StateManagmentStore<GlobalState>(
+      {
+        controlState: "world",
+        selectedTileX: null,
+        selectedTileY: null,
+      },
+      on(Actions.selectTileAction, (data: { x: number; y: number }, state) => ({
+        ...state,
+        controlState: "window",
+        selectedTileX: data.x,
+        selectedTileY: data.y,
+      }))
+    );
+  return new StateAggragator<GlobalState>(
+    worldStateReducer
   );
 }

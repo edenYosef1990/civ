@@ -1,17 +1,14 @@
-import {
-  Engine,
-  Scene,
-  SceneActivationContext,
-} from "excalibur";
-import { WorldMap } from "./world-map";
+import layerNumber from "./config/window-config.json";
+import { Engine, Scene, SceneActivationContext } from "excalibur";
+import { WorldMapRef } from "./world-map-ref";
 import { GameWindow } from "./windows/windows";
 import { GlobalState, ControlState } from "./stateManagment/global-state";
 import { Selector } from "./stateManagment/state-managment";
 import { singletonContainer } from "./singleton-container";
 import { BlockEventsLayer } from "./blockEventsLayer";
 import { UnitOpsWindow } from "./windows/text-window";
-import {WindowsCompoisitonUtils} from "./windows/windows-composition.utils";
-import * as Actions from './stateManagment/actions';
+import { WindowsCompoisitonUtils } from "./windows/windows-composition.utils";
+import * as Actions from "./stateManagment/actions";
 
 export class Level extends Scene {
   saveState() {}
@@ -32,13 +29,13 @@ export class Level extends Scene {
   getSelector<T>(
     callback: (globalState: GlobalState) => T
   ): Selector<GlobalState, T> {
-    const globalStateAggr = singletonContainer.container.stateManagmentStore;
+    const globalStateAggr = singletonContainer.container.globalStateStore;
     return globalStateAggr.getSelector(
-      new Selector((globalState) => globalState.controlState)
+      new Selector(callback)
     ) as Selector<GlobalState, T>;
   }
 
-  constructor(private worldMap: WorldMap) {
+  constructor(private worldMap: WorldMapRef) {
     super();
     const globalStateAggr = singletonContainer.container;
     this.controlStateSelector = this.getSelector(
@@ -54,30 +51,28 @@ export class Level extends Scene {
 
   override onInitialize(_engine: Engine): void {
     this.turnWindow = new UnitOpsWindow(
-      4,
-      100,
-      100,
-      () => {},
+      4, 100, 100, () => {},
       this.engine.drawWidth,
       this.engine.drawHeight,
       "Turn!"
     );
     this.unitOpsWindow = new UnitOpsWindow(
-      4,
-      200,
-      200,
-      () => {},
+      4, 200, 200, () => {},
       this.engine.drawWidth,
       this.engine.drawHeight,
       "Unit ops"
     );
+
     this.add(this.turnWindow);
-    WindowsCompoisitonUtils.setWindowToLeftOfRightWindow(this.unitOpsWindow, this.turnWindow, 10);
+    WindowsCompoisitonUtils.setWindowToLeftOfRightWindow(
+      this.unitOpsWindow,
+      this.turnWindow,
+      10
+    );
     this.add(this.unitOpsWindow);
 
-
     const globalStateAggr = singletonContainer.container;
-    globalStateAggr.stateManagmentStore.execute(Actions.initWorld, {});
+    globalStateAggr.globalStateStore.execute(Actions.initWorld, {});
     //this.blockEventsLayer = new BlockEventsLayer(2400, 1500, 4);
     //this.add(this.blockEventsLayer);
     //this.gameWindow = new GameWindow(100, 100, 6, 10, 10, () => {
@@ -99,9 +94,8 @@ export class Level extends Scene {
 
     if (newControlState !== null && newControlState.changedValue === "window") {
       this.gameWindow = new GameWindow(
-        100,
-        50,
-        4,
+        100, 50,
+        layerNumber.LayerNumbers.window,
         newSelectedTileX!.changedValue!,
         newSelectedTileY!.changedValue!,
         () => {
@@ -109,7 +103,11 @@ export class Level extends Scene {
         }
       );
       this.add(this.gameWindow);
-      this.blockEventsLayer = new BlockEventsLayer(this.engine.drawWidth, this.engine.drawHeight, 4);
+      this.blockEventsLayer = new BlockEventsLayer(
+        this.engine.drawWidth,
+        this.engine.drawHeight,
+        layerNumber.LayerNumbers.windowBackgroundBlocker
+      );
       this.add(this.blockEventsLayer);
     }
     if (

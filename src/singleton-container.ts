@@ -1,12 +1,21 @@
 import { WindowsService } from "./services/windows.service";
+import { WorldMarkingsService} from "./services/world.markings.service";
 import { WorldService } from "./services/world.service";
 import {
+  createGlobalEffects,
   createGlobalStateAggr,
   GlobalState,
 } from "./stateManagment/global-state";
 import { StateAggragator } from "./stateManagment/state-aggragator";
+import {
+  createWorldEffects,
+  createWorldStateAggr,
+  WorldEffectsDependencies,
+  WorldState,
+} from "./stateManagment/world-state";
 import { windowType } from "./types/window-type";
-import { WorldMap } from "./world-map";
+import {WorldMapMarkingsRef} from "./world-map-markings-ref";
+import { WorldMapRef } from "./world-map-ref";
 
 export interface gameState {
   selectedTile: number | null;
@@ -18,17 +27,29 @@ export type EffectsDependencies = {
 };
 
 export type GlobalContainer = {
-  stateManagmentStore: StateAggragator<GlobalState, EffectsDependencies>;
+  globalStateStore: StateAggragator<GlobalState>;
+  worldStateStore: StateAggragator<WorldState>;
 };
 
 export function createSingletonContainer(
-  worldService: WorldMap
+  worldMapRef: WorldMapRef
 ): GlobalContainer {
+  let stateManagmentStore = createGlobalStateAggr();
+  let worldService = new WorldService(20, 15, worldMapRef, stateManagmentStore);
   let effectsDependencies: EffectsDependencies = {
-    worldService: new WorldService(20, 15, worldService),
+    worldService: worldService,
   };
+  stateManagmentStore.addEffects(createGlobalEffects(effectsDependencies));
+
+  let worldStateStore = createWorldStateAggr();
+  let WorldEffectsDependencies: WorldEffectsDependencies = {
+    store: worldStateStore,
+    worldService: worldService};
+  worldStateStore.addEffects(createWorldEffects(WorldEffectsDependencies));
+
   return {
-    stateManagmentStore: createGlobalStateAggr(effectsDependencies),
+    globalStateStore: stateManagmentStore,
+    worldStateStore: worldStateStore,
   };
 }
 
@@ -39,7 +60,7 @@ export class Container {
     return this._container;
   }
 
-  InitContainer(worldMap: WorldMap) {
+  InitContainer(worldMap: WorldMapRef) {
     this._container = createSingletonContainer(worldMap);
   }
 }

@@ -1,11 +1,15 @@
+import {WorldService} from "./world.service";
 
 export class TurnManagmentService{
+
+	constructor(private worldService: WorldService){}
 
 	unitMoveToBeExecuted: {unitId: number, dest :{x: number,y: number}} | null = null;
 	technologyResearchToBeExecuted: string | null = null;
 
 
 	moveUnit(unitId: number, dest :{x: number,y: number}){
+		this.worldService.getUnitById(unitId);
 		this.unitMoveToBeExecuted = {unitId: unitId, dest: dest};
 	}
 

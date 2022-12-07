@@ -61,7 +61,6 @@ export class StateManagmentStore<T extends object>
   }
 
   execute(actionName: string, params: any) {
-    console.log("hello123");
     for (let eventHandler of this.eventHandlers) {
       let res = eventHandler(actionName, params, this.currentState);
       if (res === null) continue;
@@ -74,6 +73,10 @@ export class StateManagmentStore<T extends object>
         return;
       }
     }
+  }
+
+  getCurrentState(): T {
+    return this.currentState;
   }
 
   getSelector(selector: ISelector<T>): ISelector<T> {

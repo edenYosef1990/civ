@@ -3,15 +3,13 @@ import { soldiersSpriteSheet } from "./resources";
 
 export class SoldierUnit extends WorldEntityBase {
   static readonly size = 50;
-  constructor(public row: number, public col: number) {
+  constructor(public row: number, public col: number, soldierId: number) {
     super({
       x: row * SoldierUnit.size,
       y: col * SoldierUnit.size,
       width: 50,
       height: 50,
-      z: 8
-    });
-    console.log("soldier created");
+    },soldierId);
   }
 
   override onInitialize(){

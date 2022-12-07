@@ -1,3 +1,10 @@
 {
-	"WindowName": "City"
+  "WindowName": "City",
+  "LayerNumbers": {
+    "terrain": 1,
+    "worldEntities": 2,
+    "worldMarkings": 3,
+    "windowBackgroundBlocker": 4,
+    "window": 5
+  }
 }

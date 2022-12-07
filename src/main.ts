@@ -2,8 +2,10 @@ import { Engine, Loader } from "excalibur";
 import { Resources } from "./resources";
 import { Player } from "./player";
 import { Level } from "./level";
-import { WorldMap } from "./world-map";
+import { WorldMapRef } from "./world-map-ref";
 import { singletonContainer } from "./singleton-container";
+import {WorldMapMarkingsRef} from "./world-map-markings-ref";
+import {LayerNumbers} from "./config/window-config.json"
 
 class Game extends Engine {
   constructor() {
@@ -16,13 +18,16 @@ class Game extends Engine {
       Resources.Sword,
       Resources.grass,
       Resources.soldiersSheet,
+      Resources.terrain
     ]);
     await this.start(loader);
     const player = new Player();
-    const world = new WorldMap(20, 15);
+    const worldMarkings = new WorldMapMarkingsRef(20,15,LayerNumbers.worldMarkings);
+    const world = new WorldMapRef(20, 15);
     singletonContainer.InitContainer(world);
     const level = new Level(world);
     level.add(world);
+    level.add(worldMarkings);
     this.add("level1", level);
     this.goToScene("level1");
   }
