@@ -20,9 +20,12 @@ export class WorldMapMarkingsRef extends ex.Actor {
   readonly tileSize: number = 50;
   stateAggragator: StateAggragator<WorldState> | null = null;
 
+  movementRangeTilesSelector: Selector<
+    WorldState,
+    { col: number; row: number }[] | null
+  >;
 
-  movementRangeTilesSelector: Selector<WorldState,{col: number, row: number}[] | null>; 
-
+  moveRangeTilesSelected: { col: number; row: number }[] = [];
 
   constructor(
     private cols: number,
@@ -58,11 +61,15 @@ export class WorldMapMarkingsRef extends ex.Actor {
   }
 
   override onPostUpdate(_engine: Engine, _delta: number) {
-
     const newMoveRangeTiles = this.movementRangeTilesSelector.savedValue;
-    if(newMoveRangeTiles === null) return;
-    this.markInRange(newMoveRangeTiles);
+    if (newMoveRangeTiles === null) return;
 
+    this.unmarkInRange(this.moveRangeTilesSelected);
+    this.moveRangeTilesSelected = [];
+    if (newMoveRangeTiles.changedValue !== null) {
+      this.markInRange(newMoveRangeTiles.changedValue);
+      this.moveRangeTilesSelected = newMoveRangeTiles.changedValue;
+    }
   }
 
   private markInRange(coords: { col: number; row: number }[]) {
