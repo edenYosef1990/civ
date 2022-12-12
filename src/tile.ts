@@ -1,12 +1,16 @@
+import * as ex from "excalibur";
 import * as Actions from "./stateManagment/actions";
 import { spriteSheet, mapTypeToIndexes, TileType, TerrainSpriteSheet} from "./resources";
 import { singletonContainer } from "./singleton-container";
 import {GlobalState} from "./stateManagment/global-state";
 import {StateAggragator} from "./stateManagment/state-aggragator";
 import {WorldEntityBase} from "./types/world-entity-base";
+import {WorldState} from "./stateManagment/world-state";
 
 export class Tile extends WorldEntityBase{
   stateAggragator: StateAggragator<GlobalState> | null =
+    null;
+  worldStateAggragator: StateAggragator<WorldState> | null =
     null;
   readonly tileSize: number = 50;
 
@@ -37,10 +41,14 @@ export class Tile extends WorldEntityBase{
     };
     sprite.destSize = { width: this.tileSize, height: this.tileSize };
     this.stateAggragator = singletonContainer.container.globalStateStore;
+    this.worldStateAggragator = singletonContainer.container.worldStateStore;
 
     this.on("pointerup", () => {
-      this.stateAggragator?.execute(Actions.selectTileAction, {
-        x: this.col, y: this.row,
+      //this.stateAggragator?.execute(Actions.selectTileAction, {
+      //  x: this.col, y: this.row,
+      //});
+      this.worldStateAggragator?.execute(Actions.clickOnTile, {
+        col: this.col, row: this.row,
       });
     });
     this.on("pointerenter", () => this.graphics.add(this.selectedMark!));

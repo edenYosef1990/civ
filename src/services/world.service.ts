@@ -10,6 +10,7 @@ import { WorldEntityBase } from "../types/world-entity-base";
 import { WorldMapRef } from "../world-map-ref";
 import { uniqIdCounterService } from "./uniqIdCounter.service";
 import { GameState } from "../types/game-state";
+import {kingdomType} from "../types/kingdom-type";
 
 type unitType = "soldier" | "traveler";
 type usageType = "city" | "none";
@@ -29,6 +30,7 @@ export class Unit {
   getPosition(): { col: number; row: number } {
     return { col: this.belongToTile.col, row: this.belongToTile.row };
   }
+
 }
 
 export class TileInWorld {
@@ -45,7 +47,7 @@ export class TileInWorld {
   }
   removeUnit(unitId: number) {
     const idx = this.units.findIndex((item) => item.unitId === unitId);
-    this.units = this.units.slice(idx, 1);
+    this.units.slice(idx, 1);
   }
 }
 
@@ -55,16 +57,16 @@ export class WorldService {
   worldEntitiesIdCounter: uniqIdCounterService = new uniqIdCounterService();
 
   constructor(
-    width: number,
-    height: number,
+    public width: number,
+    public height: number,
     private worldEntityRef: WorldMapRef,
     private stateManagmentStore: StateAggragator<GlobalState>
   ) {
     this.tiles = [];
-    for (let i = 0; i < width; i++) {
+    for (let i = 0; i < height; i++) {
       let tileRow: TileInWorld[] = [];
-      for (let j = 0; j < height; j++) {
-        let tile = new TileInWorld(i, j);
+      for (let j = 0; j < width; j++) {
+        let tile = new TileInWorld(j, i);
         tileRow.push(tile);
       }
       this.tiles.push(tileRow);
@@ -72,7 +74,7 @@ export class WorldService {
   }
 
   getTile(row: number, col: number): TileInWorld {
-    return this.tiles[col][row];
+    return this.tiles[row][col];
   }
 
   getUnitById(unitId: number): Unit {
@@ -80,10 +82,11 @@ export class WorldService {
     return this.units[idx];
   }
 
-  addUnit(row: number, col: number) {
+  addUnit(row: number, col: number,kingdomType: kingdomType) {
     const unitId = this.worldEntitiesIdCounter.getCounter();
-    let addedUnit = new SoldierUnit(10, 10, unitId);
+    let addedUnit = new SoldierUnit(row,col, unitId,kingdomType);
     let tile = this.getTile(row, col);
+	  console.log(`${row},${col}`);
     let unit = new Unit(unitId, "soldier", tile, addedUnit);
     tile.addUnit(unit);
 
@@ -106,6 +109,7 @@ export class WorldService {
 
     originalTile.removeUnit(unit.unitId);
     destTile.addUnit(unit);
+    unit.belongToTile = destTile;
 
     this.stateManagmentStore.execute(Actions.setGameState, {
       state: endMovmentState,
@@ -119,16 +123,25 @@ export class WorldService {
 
   GetUnitMoveRange(unit: Unit): { col: number; row: number }[] {
     let range: { col: number; row: number }[] = [];
+
+    let tryPush = (col: number, row: number) => {
+      if (col < 0 || col >= this.width || row < 0 || row >= this.height) return;
+      range.push({ col: col, row: row });
+    };
+
     let location = unit.getPosition();
-    range.push({ col: location.col + 1, row: location.row });
-    range.push({ col: location.col, row: location.row + 1 });
-    range.push({ col: location.col - 1, row: location.row });
-    range.push({ col: location.col, row: location.row - 1 });
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        if (j === 0 && i === 0) continue;
+        tryPush(location.col + i, location.row + j);
+      }
+    }
     return range;
   }
 
   initWorld() {
-    this.addUnit(10, 10);
+    this.addUnit(10,10,'me');
+    this.addUnit(5,8,'enemy');
     //this.moveUnitToTile(0, 4, 4);
   }
 }

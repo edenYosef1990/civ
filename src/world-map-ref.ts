@@ -24,7 +24,7 @@ export class WorldMapRef extends ex.Actor {
         let tile = new Tile(
           {
             name: `tile ${i},${j} `,
-            pos: ex.vec(i * this.tileSize, j * this.tileSize),
+            pos: ex.vec(j * this.tileSize, i * this.tileSize),
             width: this.tileSize,
             height: this.tileSize,
           },

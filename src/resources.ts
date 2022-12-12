@@ -4,6 +4,7 @@ import sheet from "./images/sheet.png";
 import terrain from "./images/terrain_5.png";
 import grass from "./images/RectangleGrass.png";
 import units_blue from "./images/units_blue.png";
+import units_red from "./images/units_red.png";
 import * as ex from "excalibur";
 
 let Resources = {
@@ -11,7 +12,8 @@ let Resources = {
   grass: new ImageSource(grass),
   sheet: new ImageSource(sheet),
   terrain: new ImageSource(terrain),
-  soldiersSheet: new ImageSource(units_blue),
+  soldiersSheetBlue: new ImageSource(units_blue),
+  soldiersSheetRed: new ImageSource(units_red),
 };
 
 const spriteSheet = ex.SpriteSheet.fromImageSource({
@@ -30,8 +32,25 @@ const spriteSheet = ex.SpriteSheet.fromImageSource({
   },
 });
 
-const soldiersSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.soldiersSheet,
+const soldiersSpriteSheetBlue = ex.SpriteSheet.fromImageSource({
+  image: Resources.soldiersSheetBlue,
+  grid: {
+    rows: 6,
+    columns: 6,
+    spriteHeight: 32,
+    spriteWidth: 32,
+  },
+  spacing: {
+    margin: {
+      x: 0,
+      y: 0,
+    },
+  },
+});
+
+
+const soldiersSpriteSheetRed = ex.SpriteSheet.fromImageSource({
+  image: Resources.soldiersSheetRed,
   grid: {
     rows: 6,
     columns: 6,
@@ -98,4 +117,4 @@ export function mapTypeToIndexes(tileType: TileType): {
   }
 }
 
-export { Resources, spriteSheet , soldiersSpriteSheet , TerrainSpriteSheet};
+export { Resources, spriteSheet , soldiersSpriteSheetBlue, soldiersSpriteSheetRed , TerrainSpriteSheet};

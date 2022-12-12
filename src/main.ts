@@ -17,14 +17,15 @@ class Game extends Engine {
       Resources.sheet,
       Resources.Sword,
       Resources.grass,
-      Resources.soldiersSheet,
+      Resources.soldiersSheetBlue,
+      Resources.soldiersSheetRed,
       Resources.terrain
     ]);
     await this.start(loader);
     const player = new Player();
-    const worldMarkings = new WorldMapMarkingsRef(20,15,LayerNumbers.worldMarkings);
     const world = new WorldMapRef(20, 15);
     singletonContainer.InitContainer(world);
+    const worldMarkings = new WorldMapMarkingsRef(20,15,LayerNumbers.worldMarkings);
     const level = new Level(world);
     level.add(world);
     level.add(worldMarkings);

@@ -2,19 +2,19 @@ import {WorldService} from "./world.service";
 
 export class TurnManagmentService{
 
-	constructor(private worldService: WorldService){}
+	currPointLeft: number;
 
-	unitMoveToBeExecuted: {unitId: number, dest :{x: number,y: number}} | null = null;
+	constructor(){
+		this.currPointLeft = 5;
+	}
+
 	technologyResearchToBeExecuted: string | null = null;
 
 
-	moveUnit(unitId: number, dest :{x: number,y: number}){
-		this.worldService.getUnitById(unitId);
-		this.unitMoveToBeExecuted = {unitId: unitId, dest: dest};
-	}
 
-	cancelCurrMoveUnit(){this.unitMoveToBeExecuted = null;}
 	advanceInTechnologyTree(attrName: string){this.technologyResearchToBeExecuted = attrName}
+
+
 	endTurn(){}
 
 }

@@ -4,10 +4,12 @@ import { StateManagmentStore, on } from "./state-managment";
 import { WorldService } from "../services/world.service";
 import * as Actions from "./world-state.actions";
 import { WorldStateEffects } from "./world-state.effects";
+import {TurnManagmentService} from "../services/turn-managment.service";
 
 export type WorldEffectsDependencies = {
   store: StateAggragator<WorldState>;
   worldService: WorldService;
+  TurnManagmentService: TurnManagmentService;
 };
 
 export type WorldStateEnum = "" | "window";
@@ -57,7 +59,7 @@ export function createWorldStateAggr<T>(): StateAggragator<WorldState> {
           movementRangeTiles: data.moveRange,
         })
       ),
-      on(Actions.selectUnit, (data: { unitId: number }, state) => ({
+      on(Actions.selectUnit, (data: { unitId: number | null }, state) => ({
         ...state,
         selectedUnit: data.unitId,
       }))

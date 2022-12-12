@@ -1,3 +1,4 @@
+import {TurnManagmentService} from "./services/turn-managment.service";
 import { WindowsService } from "./services/windows.service";
 import { WorldMarkingsService} from "./services/world.markings.service";
 import { WorldService } from "./services/world.service";
@@ -36,6 +37,7 @@ export function createSingletonContainer(
 ): GlobalContainer {
   let stateManagmentStore = createGlobalStateAggr();
   let worldService = new WorldService(20, 15, worldMapRef, stateManagmentStore);
+  let turnManagmentService = new TurnManagmentService();
   let effectsDependencies: EffectsDependencies = {
     worldService: worldService,
   };
@@ -44,7 +46,8 @@ export function createSingletonContainer(
   let worldStateStore = createWorldStateAggr();
   let WorldEffectsDependencies: WorldEffectsDependencies = {
     store: worldStateStore,
-    worldService: worldService};
+    worldService: worldService,
+    TurnManagmentService: turnManagmentService};
   worldStateStore.addEffects(createWorldEffects(WorldEffectsDependencies));
 
   return {
